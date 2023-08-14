@@ -1,14 +1,10 @@
-package org.example;
+package org.example.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 public class SteamInputStream extends DataInputStream {
-    public SteamInputStream(InputStream inputStream) {
-        super(inputStream);
-    }
 
     public SteamInputStream(ByteArrayInputStream inputStream) {
         super(inputStream);

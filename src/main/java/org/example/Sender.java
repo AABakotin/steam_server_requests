@@ -31,7 +31,7 @@ public class Sender {
         }
     }
 
-    protected DatagramPacket recieve(byte expected) {
+    protected DatagramPacket receive() {
         byte[] buf = new byte[4096];
         DatagramPacket recv = new DatagramPacket(buf, buf.length);
         try {
@@ -41,8 +41,8 @@ public class Sender {
             return null;
         }
 
-        if (recv.getLength() > 0 && recv.getData()[4] != expected) {
-            System.out.println("ERROR: wrong packet received, expected 0x" + Tools.byteToHex(expected));
+        if (recv.getLength() > 0 && recv.getData()[4] != Request.INFO_RESPONSE) {
+            System.out.println("ERROR: wrong packet received, expected 0x" + Request.INFO_RESPONSE);
             return null;
         }
 
