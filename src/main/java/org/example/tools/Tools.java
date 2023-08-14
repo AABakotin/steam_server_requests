@@ -1,4 +1,4 @@
-package org.example;
+package org.example.tools;
 
 public class Tools {private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
     public static String bytesToHex(byte[] bytes) {

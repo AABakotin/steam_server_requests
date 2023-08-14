@@ -1,4 +1,4 @@
-package org.example;
+package org.example.parser;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,11 +32,11 @@ public class Parser {
 
     private byte[] challenge;
     private boolean challengeValid;
-    private ArrayList<Player> playerList;
+
     private HashMap<String, String> rules;
 
     public Parser() {
-        this.playerList = new ArrayList<Player>();
+
         this.challenge = new byte[4];
         this.rules = new HashMap<>();
         this.challengeValid = false;
@@ -44,11 +44,11 @@ public class Parser {
     }
 
     public void parseInfo(DatagramPacket packet) throws IOException {
-       SteamInputStream sis = new SteamInputStream(new ByteArrayInputStream(packet.getData()));
-        ByteArrayInputStream bai = new ByteArrayInputStream(packet.getData());
+        if (packet == null){
+            return;
+        }
+        SteamInputStream sis = new SteamInputStream(new ByteArrayInputStream(packet.getData()));
         sis.skipBytes(5);
-
-
 
         this.protocol = sis.readByte();
         this.name = sis.readString();
@@ -177,9 +177,7 @@ public class Parser {
         return challengeValid;
     }
 
-    public ArrayList<Player> getPlayerList() {
-        return playerList;
-    }
+
 
     public HashMap<String, String> getRules() {
         return rules;
