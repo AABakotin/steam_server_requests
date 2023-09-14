@@ -3,184 +3,75 @@ package org.example.parser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.net.DatagramPacket;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
+
 
 public class Parser {
 
-    private byte protocol;
-    private String name;
-    private String map;
-    private String folder;
-    private String game;
-    private int appid;
-    private int players;
-    private int maxPlayers;
-    private int bots;
-    private char type;
-    private char env;
-    private byte visibility;
-    private byte vac;
-    private String version;
-    private byte EDF;
-    private int gamePort;
-    private Long steamid;
-    private int sourceTVPort;
-    private String sourceTVName;
-    private String descTags;
-    private Long gameid;
 
-    private byte[] challenge;
-    private boolean challengeValid;
+    public static Map<String, String> getInformation(DatagramPacket packet) {
+        Map<String, String> stringMap = new LinkedHashMap<>();
+        if (packet != null) {
+            SteamInputStream sis = new SteamInputStream(
+                    new ByteArrayInputStream(packet.getData()));
 
-    private HashMap<String, String> rules;
+            try {
+                sis.skipBytes(5);
+                byte protocol = sis.readByte();
 
-    public Parser() {
+                String name = sis.readString();
+                stringMap.put("ServerName", name);
 
-        this.challenge = new byte[4];
-        this.rules = new HashMap<>();
-        this.challengeValid = false;
+                String map = sis.readString();
+                stringMap.put("Map", map);
 
-    }
+                String folder = sis.readString();
+                String game = sis.readString();
+                String appId = sis.readSteamShort();
+                String players = String.valueOf(sis.read());
 
-    public void parseInfo(DatagramPacket packet) throws IOException {
-        if (packet == null){
-            return;
+                stringMap.put("Players", players);
+                String maxPlayers = String.valueOf(sis.read());
+
+                stringMap.put("MaxPlayers", maxPlayers);
+                String bots = String.valueOf(sis.read());
+
+                String serverType = String.valueOf((char) sis.read());
+                String environment = String.valueOf((char) sis.read());
+                String visibility = String.valueOf(sis.readByte());
+                String vac = String.valueOf(sis.readByte());
+
+                String version = sis.readString();
+                stringMap.put("Version", version);
+
+                byte EDF = sis.readByte();
+                if ((EDF & 0x80) > 0) {
+                    String gamePort = sis.readSteamShort();
+                    stringMap.put("gamePort", gamePort);
+                }
+                if ((EDF & 0x10) > 0) {
+                    String steamId = String.valueOf(sis.readLong());
+                }
+                if ((EDF & 0x40) > 0) {
+                    String sourceTVPort = sis.readSteamShort();
+                    String sourceTVName = sis.readString();
+                }
+                if ((EDF & 0x20) > 0) {
+                    String descTags = sis.readString();
+                }
+                if ((EDF & 0x01) > 0) {
+                    String gameId = String.valueOf(sis.readLong());
+                }
+
+                return stringMap;
+
+            } catch (IOException e) {
+                e.fillInStackTrace();
+            }
         }
-        SteamInputStream sis = new SteamInputStream(new ByteArrayInputStream(packet.getData()));
-        sis.skipBytes(5);
-
-        this.protocol = sis.readByte();
-        this.name = sis.readString();
-        this.map = sis.readString();
-        this.folder = sis.readString();
-        this.game = sis.readString();
-        this.appid = sis.readSteamShort();
-        this.players = sis.read();
-        this.maxPlayers = sis.read();
-        this.bots = sis.read();
-        this.type = (char) sis.read();
-        this.env = (char) sis.read();
-        this.visibility = sis.readByte();
-        this.vac = sis.readByte();
-        this.version = sis.readString();
-        this.EDF = sis.readByte();
-
-        if ((EDF & 0x80) > 0) {
-            this.gamePort = sis.readSteamShort();
-        }
-        if ((EDF & 0x10) > 0) {
-            this.steamid = sis.readLong();
-        }
-        if ((EDF & 0x40) > 0) {
-            this.sourceTVPort = sis.readSteamShort();
-            this.sourceTVName = sis.readString();
-        }
-        if ((EDF & 0x20) > 0) {
-            this.descTags = sis.readString();
-        }
-        if ((EDF & 0x01) > 0) {
-            this.gameid = sis.readLong();
-        }
-
-    }
-
-    public byte getProtocol() {
-        return protocol;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getMap() {
-        return map;
-    }
-
-    public String getFolder() {
-        return folder;
-    }
-
-    public String getGame() {
-        return game;
-    }
-
-    public int getAppid() {
-        return appid;
-    }
-
-    public int getPlayers() {
-        return players;
-    }
-
-    public int getMaxPlayers() {
-        return maxPlayers;
-    }
-
-    public int getBots() {
-        return bots;
-    }
-
-    public char getType() {
-        return type;
-    }
-
-    public char getEnv() {
-        return env;
-    }
-
-    public byte getVisibility() {
-        return visibility;
-    }
-
-    public byte getVac() {
-        return vac;
-    }
-
-    public String getVersion() {
-        return version;
-    }
-
-    public byte getEDF() {
-        return EDF;
-    }
-
-    public int getGamePort() {
-        return gamePort;
-    }
-
-    public Long getSteamid() {
-        return steamid;
-    }
-
-    public int getSourceTVPort() {
-        return sourceTVPort;
-    }
-
-    public String getSourceTVName() {
-        return sourceTVName;
-    }
-
-    public String getDescTags() {
-        return descTags;
-    }
-
-    public Long getGameid() {
-        return gameid;
-    }
-
-    public byte[] getChallenge() {
-        return challenge;
-    }
-
-    public boolean isChallengeValid() {
-        return challengeValid;
-    }
-
-
-
-    public HashMap<String, String> getRules() {
-        return rules;
+        return stringMap;
     }
 }
+
+
 

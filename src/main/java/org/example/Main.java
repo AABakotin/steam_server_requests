@@ -1,38 +1,35 @@
 package org.example;
 
-import org.example.parser.Parser;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.InetSocketAddress;
+import org.example.sender.ISender;
+import org.example.sender.Sender;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+import static org.example.enums.Constants.A2S_INFO;
 
 
 public class Main {
 
-    private static final String address = "195.18.27.98";
-    private static final int port = 2310;
-
+    private static final String addressDusk = "185.189.255.183";
+    private static final int portDuskCherno = 2403;
+    private static final int portDuskNamalsk = 2603;
 
 
     public static void main(String[] args) {
 
-        try {
-            Sender sender = new Sender(new InetSocketAddress(address, port));
-            sender.send(Request.info());
-            DatagramPacket receive = sender.receive();
-            Parser parser = new Parser();
-            parser.parseInfo(receive);
-            System.out.println(
-                    parser.getName() + "\n"
-                            + parser.getPlayers() + "/" + parser.getMaxPlayers() + "\n"
-                            + parser.getMap() + "\n"
-                            + parser.getVersion() + "\n");
+        List<Integer> portlist = new ArrayList<>();
+        portlist.add(2403);
+        portlist.add(2603);
+        for (Integer i: portlist) {
+            ISender sender = new Sender.Configuration()
+                    .setAddress(addressDusk, i)
+                    .build();
 
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            sender.send(A2S_INFO);
+            System.out.println(sender.receive());
         }
-
-
     }
-
 }

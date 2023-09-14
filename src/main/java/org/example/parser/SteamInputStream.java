@@ -11,25 +11,25 @@ public class SteamInputStream extends DataInputStream {
     }
 
     public String readString() throws IOException {
-        String res = "";
+        StringBuilder res = new StringBuilder();
         byte b = readByte();
         while (b != 0x00) {
-            res += (char) b;
+            res.append((char) b);
             b = readByte();
         }
-        return res;
+        return res.toString();
     }
 
-    public int readSteamLong() throws IOException {
-        return Integer.reverseBytes(readInt());
+    public String readSteamLong() throws IOException {
+        return String.valueOf(Integer.reverseBytes(readInt()));
     }
 
-    public float readSteamFloat() throws IOException {
-        return Float.intBitsToFloat(Integer.reverseBytes(readInt()));
+    public String readSteamFloat() throws IOException {
+        return String.valueOf(Float.intBitsToFloat(Integer.reverseBytes(readInt())));
     }
 
-    public int readSteamShort() throws IOException {
-        return Short.reverseBytes(readShort());
+    public String readSteamShort() throws IOException {
+        return String.valueOf(Short.reverseBytes(readShort()));
     }
 
 }
